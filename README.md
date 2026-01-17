@@ -1,2 +1,11 @@
-# PriceScope.lk
-It is a simple website where people can buy products by comparing prices of each products with different super markets in Sri Lanka. It contains additional features such as AI chatbot, ,Sri Lankan Recipes and find branches. It have different interfaces for online customers and pickup from store customers. 
+
+  # Supermarket Price Comparison Website (Copy)
+
+  This is a code bundle for Supermarket Price Comparison Website (Copy). The original project is available at https://www.figma.com/design/kAwpWwDBLMMyJ0gxier6Mh/Supermarket-Price-Comparison-Website--Copy-.
+
+  ## Running the code
+
+  Run `npm i` to install the dependencies.
+
+  Run `npm run dev` to start the development server.
+  
