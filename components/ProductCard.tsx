@@ -1,8 +1,9 @@
-import { TrendingDown, TrendingUp, Eye, Tag, ShoppingCart, Bookmark } from 'lucide-react';
+"use client";
+
+import { ShoppingCart, BarChart2, Heart, Plus, TrendingDown } from 'lucide-react';
 import { useState } from 'react';
 import { StoreSelectionModal } from './StoreSelectionModal';
-import { StarRating } from './StarRating';
-import type { Product, Supermarket } from '../types';
+import { Product, Supermarket } from '../types';
 
 interface ProductCardProps {
   product: Product;
@@ -15,29 +16,30 @@ interface ProductCardProps {
 }
 
 const supermarketColors = {
-  cargills: { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-900', badge: 'bg-red-600' },
-  keells: { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-900', badge: 'bg-green-600' },
-  glomark: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-900', badge: 'bg-blue-600' },
+  cargills: { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-100', dot: 'bg-red-600' },
+  keells: { bg: 'bg-green-50', text: 'text-green-700', border: 'border-green-100', dot: 'bg-green-600' },
+  glomark: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-100', dot: 'bg-blue-600' },
 };
 
-const supermarketNames = {
-  cargills: 'Cargills',
-  keells: 'Keells',
-  glomark: 'Glomark',
-};
-
-export function ProductCard({ product, onCompare, onAddToCart, isLoggedIn, onLoginRequired, isSaved, onToggleSave }: ProductCardProps) {
+export function ProductCard({
+  product,
+  onCompare,
+  onAddToCart,
+  isLoggedIn,
+  onLoginRequired,
+  isSaved,
+  onToggleSave,
+}: ProductCardProps) {
   const [showStoreSelection, setShowStoreSelection] = useState(false);
-  
-  const prices = product.prices.map(p => p.price);
-  const minPrice = Math.min(...prices);
-  const maxPrice = Math.max(...prices);
-  const savings = maxPrice - minPrice;
-  const savingsPercent = ((savings / maxPrice) * 100).toFixed(1);
 
-  const bestDeal = product.prices.find(p => p.price === minPrice);
+  // Logic to find the best deal
+  const sortedPrices = [...product.prices].sort((a, b) => a.price - b.price);
+  const bestDeal = sortedPrices[0];
+  const maxPrice = Math.max(...product.prices.map((p) => p.price));
+  const savings = maxPrice - bestDeal.price;
+  const savingsPercentage = Math.round((savings / maxPrice) * 100);
 
-  // Check if this is pickup mode (function takes only one parameter)
+  // Check pickup mode
   const isPickupMode = onAddToCart.length === 1;
 
   const handleAddToCart = (supermarket: Supermarket) => {
@@ -45,131 +47,156 @@ export function ProductCard({ product, onCompare, onAddToCart, isLoggedIn, onLog
     setShowStoreSelection(false);
   };
 
-  const handleAddToCartClick = () => {
+  const handleAddToCartClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!isLoggedIn) {
       onLoginRequired();
       return;
     }
-
     if (isPickupMode) {
-      // Pickup mode: add directly without showing modal
       (onAddToCart as (product: Product) => void)(product);
     } else {
-      // Online mode: show store selection modal
       setShowStoreSelection(true);
     }
   };
 
+  const handleSave = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!isLoggedIn) onLoginRequired();
+    else onToggleSave(product.id);
+  };
+
   return (
     <>
-      <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group">
-        <div className="relative">
+      <div 
+        onClick={onCompare}
+        className="group relative bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full cursor-pointer overflow-hidden"
+      >
+        {/* --- IMAGE SECTION --- */}
+        <div className="relative h-40 sm:h-52 bg-gray-50 overflow-hidden">
           <img
             src={product.image}
             alt={product.name}
-            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
           />
-          {/* Save Button */}
+          
+          {/* Top Badges */}
+          <div className="absolute top-3 left-3 flex gap-2">
+            {savings > 0 && (
+              <span className="bg-emerald-500 text-white text-[10px] sm:text-xs font-bold px-2 py-1 rounded-lg shadow-sm flex items-center gap-1">
+                <TrendingDown className="w-3 h-3" />
+                {savingsPercentage}% OFF
+              </span>
+            )}
+          </div>
+
+          {/* Save Button (Floating) */}
           <button
-            onClick={() => onToggleSave(product.id)}
-            className={`absolute top-3 left-3 p-2 rounded-full backdrop-blur-sm transition-all hover:scale-110 ${
-              isSaved
-                ? 'bg-yellow-500 text-white shadow-lg'
-                : 'bg-white/90 text-gray-700 hover:bg-yellow-500 hover:text-white'
+            onClick={handleSave}
+            className={`absolute top-3 right-3 p-2 rounded-full backdrop-blur-md transition-all duration-300 ${
+              isSaved 
+                ? 'bg-red-500 text-white shadow-lg rotate-0' 
+                : 'bg-white/80 text-gray-500 hover:bg-red-500 hover:text-white hover:rotate-12'
             }`}
           >
-            <Bookmark className={`w-5 h-5 ${isSaved ? 'fill-current' : ''}`} />
+            <Heart className={`w-4 h-4 ${isSaved ? 'fill-current' : ''}`} />
           </button>
-          {savings > 0 && (
-            <div className="absolute top-3 right-3 bg-green-600 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg flex items-center gap-1">
-              <TrendingDown className="w-4 h-4" />
-              Save Rs. {savings.toFixed(2)}
-            </div>
-          )}
-          <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-semibold text-gray-700">
-            {product.unit}
-          </div>
         </div>
 
-        <div className="p-5">
-          <h3 className="text-xl font-bold text-gray-800 mb-1">{product.name}</h3>
-          <p className="text-sm text-gray-500 mb-4 capitalize">{product.category}</p>
+        {/* --- CONTENT SECTION --- */}
+        <div className="p-4 flex flex-col flex-grow">
+          
+          {/* Title & Category */}
+          <div className="mb-3">
+            <span className="text-[10px] font-bold tracking-wider text-gray-400 uppercase">{product.category}</span>
+            <h3 className="text-sm sm:text-lg font-bold text-gray-800 leading-tight line-clamp-2 h-10 sm:h-14">
+              {product.name}
+            </h3>
+            <div className="text-xs text-gray-400 font-medium mt-1">{product.unit}</div>
+          </div>
 
-          <div className="space-y-2 mb-4">
-            {product.prices.map((priceInfo) => (
-              <div
-                key={priceInfo.supermarket}
-                className={`flex flex-col p-3 rounded-lg border-2 ${
-                  priceInfo.price === minPrice
-                    ? `${supermarketColors[priceInfo.supermarket].bg} ${supermarketColors[priceInfo.supermarket].border}`
-                    : 'bg-gray-50 border-gray-200'
-                } transition-all`}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${supermarketColors[priceInfo.supermarket].badge}`} />
-                    <span className="font-medium text-gray-700 text-sm">
-                      {supermarketNames[priceInfo.supermarket]}
-                    </span>
-                    {priceInfo.discount && (
-                      <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
-                        <Tag className="w-3 h-3" />
-                        -{priceInfo.discount}%
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-gray-900">
-                      Rs. {priceInfo.price.toFixed(2)}
-                    </span>
-                    {priceInfo.price === minPrice && savings > 0 && (
-                      <TrendingDown className="w-4 h-4 text-green-600" />
-                    )}
-                    {priceInfo.price === maxPrice && savings > 0 && (
-                      <TrendingUp className="w-4 h-4 text-red-600" />
-                    )}
-                  </div>
+          {/* === MOBILE VIEW: THE "WINNER CARD" (Fixes Congestion) === */}
+          <div className="block md:hidden mt-auto mb-4">
+            <div className={`rounded-xl p-3 border ${supermarketColors[bestDeal.supermarket].bg} ${supermarketColors[bestDeal.supermarket].border}`}>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] font-semibold text-gray-500 uppercase">Best Price</span>
+                <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/60`}>
+                  <div className={`w-1.5 h-1.5 rounded-full ${supermarketColors[bestDeal.supermarket].dot}`} />
+                  <span className={`text-[10px] font-bold capitalize ${supermarketColors[bestDeal.supermarket].text}`}>
+                    {bestDeal.supermarket}
+                  </span>
                 </div>
-                {priceInfo.rating && (
-                  <div className="flex items-center justify-end">
-                    <StarRating rating={priceInfo.rating} interactive={true} size="sm" />
-                  </div>
+              </div>
+              <div className="flex items-end gap-2">
+                <span className={`text-xl font-bold ${supermarketColors[bestDeal.supermarket].text}`}>
+                  Rs. {bestDeal.price}
+                </span>
+                {savings > 0 && (
+                  <span className="text-xs text-gray-400 line-through mb-1">
+                    Rs. {maxPrice}
+                  </span>
                 )}
+              </div>
+            </div>
+            {/* Tiny indicator that there are more options */}
+            {product.prices.length > 1 && (
+               <p className="text-[10px] text-center text-gray-400 mt-2">
+                 + {product.prices.length - 1} other stores
+               </p>
+            )}
+          </div>
+
+          {/* === DESKTOP VIEW: THE "LEADERBOARD" === */}
+          <div className="hidden md:flex flex-col gap-2 mt-auto mb-4">
+            {sortedPrices.map((price, idx) => (
+              <div 
+                key={idx}
+                className={`flex items-center justify-between p-2 rounded-lg border transition-colors ${
+                  idx === 0 
+                    ? `${supermarketColors[price.supermarket].bg} ${supermarketColors[price.supermarket].border}` 
+                    : 'bg-white border-transparent hover:bg-gray-50'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${supermarketColors[price.supermarket].dot}`} />
+                  <span className={`text-xs font-semibold capitalize ${idx === 0 ? supermarketColors[price.supermarket].text : 'text-gray-600'}`}>
+                    {price.supermarket}
+                  </span>
+                  {idx === 0 && (
+                     <span className="bg-white px-1.5 py-0.5 rounded text-[9px] font-bold border border-gray-100 shadow-sm">
+                       WINNER
+                     </span>
+                  )}
+                </div>
+                <div className={`text-sm font-bold ${idx === 0 ? supermarketColors[price.supermarket].text : 'text-gray-700'}`}>
+                  Rs. {price.price}
+                </div>
               </div>
             ))}
           </div>
 
-          {savings > 0 && (
-            <div className="bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200 rounded-lg p-3 mb-4">
-              <p className="text-sm font-semibold text-green-800">
-                Best Price at {supermarketNames[bestDeal!.supermarket]}
-              </p>
-              <p className="text-xs text-green-700 mt-1">
-                Save {savingsPercent}% compared to highest price
-              </p>
-            </div>
-          )}
-
-          <div className="grid grid-cols-2 gap-2">
+          {/* --- BUTTONS --- */}
+          <div className="grid grid-cols-4 gap-2">
             <button
-              onClick={onCompare}
-              className="bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold py-3 rounded-lg transition-all flex items-center justify-center gap-2"
+              onClick={(e) => { e.stopPropagation(); onCompare(); }}
+              className="col-span-1 flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-xl transition-colors h-10 sm:h-11"
+              title="Compare Details"
             >
-              <Eye className="w-4 h-4" />
-              Details
+              <BarChart2 className="w-5 h-5" />
             </button>
+
             <button
               onClick={handleAddToCartClick}
-              className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-3 rounded-lg transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+              className="col-span-3 flex items-center justify-center gap-2 bg-gradient-to-r from-gray-900 to-gray-800 hover:from-black hover:to-gray-900 text-white font-bold rounded-xl shadow-md hover:shadow-lg active:scale-95 transition-all h-10 sm:h-11 text-sm"
             >
-              <ShoppingCart className="w-4 h-4" />
-              Add to Cart
+              <Plus className="w-4 h-4" />
+              <span>Add to Cart</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Store Selection Modal */}
+      {/* Modal logic remains the same */}
       {showStoreSelection && (
         <StoreSelectionModal
           product={product}
