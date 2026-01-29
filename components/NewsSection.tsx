@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { TrendingDown, TrendingUp, Newspaper, Clock, ChevronLeft, ChevronRight, X, AlertCircle, Sparkles, Heart, Bookmark, Share2, Eye, ThumbsUp, MessageCircle } from 'lucide-react';
+import { TrendingDown, TrendingUp, Newspaper, Clock, ChevronLeft, ChevronRight, X, AlertCircle, Sparkles, Heart, Bookmark, Share2, Eye, ThumbsUp } from 'lucide-react';
 
 interface NewsItem {
   id: string;
@@ -235,7 +235,6 @@ export function NewsSection() {
         url: window.location.href,
       });
     } else {
-      // Fallback: copy to clipboard
       navigator.clipboard.writeText(`${news.title} - ${news.description}`);
       alert('Link copied to clipboard!');
     }
@@ -251,49 +250,51 @@ export function NewsSection() {
     <>
       <div className="bg-gradient-to-br from-blue-50 via-white to-green-50 rounded-2xl shadow-xl overflow-hidden border-2 border-blue-200">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 via-green-600 to-blue-700 text-white p-6">
-          <div className="flex items-center justify-between">
+        <div className="bg-gradient-to-r from-blue-600 via-green-600 to-blue-700 text-white p-4 md:p-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="bg-white/20 p-3 rounded-xl backdrop-blur-sm">
-                <Newspaper className="w-8 h-8" />
+              <div className="bg-white/20 p-2 md:p-3 rounded-xl backdrop-blur-sm">
+                <Newspaper className="w-6 h-6 md:w-8 md:h-8" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold flex items-center gap-2">
+                <h2 className="text-xl md:text-2xl font-bold flex items-center gap-2">
                   Price News & Updates
-                  <Sparkles className="w-5 h-5 animate-pulse" />
+                  <Sparkles className="w-4 h-4 md:w-5 md:h-5 animate-pulse" />
                 </h2>
-                <p className="text-blue-100 text-sm mt-1">Stay updated with the latest price changes and deals</p>
+                <p className="text-blue-100 text-xs md:text-sm mt-1">Stay updated with the latest price changes</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
               <button
                 onClick={() => setAutoPlay(!autoPlay)}
-                className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
+                className={`px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-semibold text-xs md:text-sm transition-all ${
                   autoPlay
                     ? 'bg-white/20 hover:bg-white/30'
                     : 'bg-white text-blue-600'
                 }`}
               >
-                {autoPlay ? '⏸️ Pause' : '▶️ Play'}
+                {autoPlay ? '⏸️' : '▶️'}
               </button>
               <button
                 onClick={prevNews}
-                className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-all hover:scale-110"
+                className="p-1.5 md:p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-all hover:scale-110"
               >
-                <ChevronLeft className="w-6 h-6" />
+                <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
               </button>
               <button
                 onClick={nextNews}
-                className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-all hover:scale-110"
+                className="p-1.5 md:p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-all hover:scale-110"
               >
-                <ChevronRight className="w-6 h-6" />
+                <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
               </button>
             </div>
           </div>
         </div>
 
         {/* News Cards */}
-        <div className="p-6">
+        <div className="p-4 md:p-6">
+          {/* Mobile: Grid with 1 column, Desktop: 3 columns */}
+          {/* We only show the FIRST visible news on mobile (idx > 0 hidden), allowing carousel behavior */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {visibleNews.map((news, idx) => {
               const colors = supermarketColors[news.supermarket];
@@ -309,12 +310,13 @@ export function NewsSection() {
                   onClick={() => setSelectedNews(news)}
                   onMouseEnter={() => setHoveredCard(news.id)}
                   onMouseLeave={() => setHoveredCard(null)}
-                  className={`bg-white rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 shadow-lg hover:shadow-2xl ${
-                    idx === 0 ? 'ring-4 ring-purple-400 ring-offset-2 transform scale-105' : 'hover:scale-105'
-                  }`}
+                  className={`bg-white rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 shadow-lg hover:shadow-2xl 
+                    ${idx > 0 ? 'hidden md:block' : 'block'} 
+                    ${idx === 0 ? 'md:ring-4 md:ring-purple-400 md:ring-offset-2 md:transform md:scale-105' : 'hover:scale-105'}
+                  `}
                 >
                   {/* Image */}
-                  <div className="relative h-48 overflow-hidden">
+                  <div className="relative h-48 md:h-48 overflow-hidden">
                     <img
                       src={news.image}
                       alt={news.title}
@@ -325,31 +327,31 @@ export function NewsSection() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
                     
                     {/* Type Badge */}
-                    <div className={`absolute top-3 left-3 ${typeInfo.bgColor} backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-2`}>
-                      <Icon className={`w-4 h-4 ${typeInfo.color}`} />
-                      <span className={`text-xs font-bold ${typeInfo.color}`}>{typeInfo.label}</span>
+                    <div className={`absolute top-3 left-3 ${typeInfo.bgColor} backdrop-blur-sm px-2 md:px-3 py-1 rounded-full flex items-center gap-2`}>
+                      <Icon className={`w-3 h-3 md:w-4 md:h-4 ${typeInfo.color}`} />
+                      <span className={`text-[10px] md:text-xs font-bold ${typeInfo.color}`}>{typeInfo.label}</span>
                     </div>
 
                     {/* Change Badge */}
                     {news.change && (
-                      <div className={`absolute top-3 right-3 ${news.change < 0 ? 'bg-green-600' : 'bg-red-600'} text-white px-3 py-2 rounded-xl font-bold text-lg shadow-lg`}>
+                      <div className={`absolute top-3 right-3 ${news.change < 0 ? 'bg-green-600' : 'bg-red-600'} text-white px-2 md:px-3 py-1 md:py-2 rounded-xl font-bold text-sm md:text-lg shadow-lg`}>
                         {news.change > 0 ? '+' : ''}{news.change}%
                       </div>
                     )}
 
                     {/* Supermarket Badge */}
-                    <div className={`absolute bottom-3 left-3 bg-gradient-to-r ${colors.gradient} text-white px-4 py-2 rounded-lg font-bold text-sm shadow-lg flex items-center gap-2`}>
-                      <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                    <div className={`absolute bottom-3 left-3 bg-gradient-to-r ${colors.gradient} text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg font-bold text-xs md:text-sm shadow-lg flex items-center gap-2`}>
+                      <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-white rounded-full animate-pulse" />
                       {colors.name}
                     </div>
 
                     {/* Stats Overlay */}
                     <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                      <div className="bg-black/60 backdrop-blur-sm text-white px-2 py-1 rounded-lg text-xs flex items-center gap-1">
+                      <div className="bg-black/60 backdrop-blur-sm text-white px-2 py-1 rounded-lg text-[10px] md:text-xs flex items-center gap-1">
                         <Eye className="w-3 h-3" />
                         {news.views}
                       </div>
-                      <div className="bg-black/60 backdrop-blur-sm text-white px-2 py-1 rounded-lg text-xs flex items-center gap-1">
+                      <div className="bg-black/60 backdrop-blur-sm text-white px-2 py-1 rounded-lg text-[10px] md:text-xs flex items-center gap-1">
                         <Heart className={`w-3 h-3 ${isLiked ? 'fill-red-500 text-red-500' : ''}`} />
                         {news.likes + (isLiked ? 1 : 0)}
                       </div>
@@ -357,14 +359,14 @@ export function NewsSection() {
                   </div>
 
                   {/* Content */}
-                  <div className="p-5">
+                  <div className="p-4 md:p-5">
                     {/* Title */}
-                    <h3 className="font-bold text-gray-900 text-xl mb-2 line-clamp-2 hover:text-purple-600 transition-colors">
+                    <h3 className="font-bold text-gray-900 text-lg md:text-xl mb-2 line-clamp-2 hover:text-purple-600 transition-colors">
                       {news.title}
                     </h3>
 
                     {/* Description */}
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">
+                    <p className="text-gray-600 text-xs md:text-sm mb-4 line-clamp-2 leading-relaxed">
                       {news.description}
                     </p>
 
@@ -374,13 +376,13 @@ export function NewsSection() {
                         {news.products.slice(0, 3).map((product, i) => (
                           <span
                             key={i}
-                            className={`${colors.bg} border ${colors.border} px-3 py-1 rounded-full text-xs font-semibold ${colors.text}`}
+                            className={`${colors.bg} border ${colors.border} px-2 md:px-3 py-1 rounded-full text-[10px] md:text-xs font-semibold ${colors.text}`}
                           >
                             {product}
                           </span>
                         ))}
                         {news.products.length > 3 && (
-                          <span className="bg-gray-100 border border-gray-300 px-3 py-1 rounded-full text-xs font-semibold text-gray-600">
+                          <span className="bg-gray-100 border border-gray-300 px-2 md:px-3 py-1 rounded-full text-[10px] md:text-xs font-semibold text-gray-600">
                             +{news.products.length - 3}
                           </span>
                         )}
@@ -390,7 +392,7 @@ export function NewsSection() {
                     {/* Footer */}
                     <div className="flex items-center justify-between pt-4 border-t border-gray-200">
                       <div className="flex items-center gap-2 text-gray-500 text-xs">
-                        <Clock className="w-4 h-4" />
+                        <Clock className="w-3 h-3 md:w-4 md:h-4" />
                         {news.date}
                       </div>
 
@@ -398,7 +400,7 @@ export function NewsSection() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={(e) => toggleLike(news.id, e)}
-                          className={`p-2 rounded-lg transition-all hover:scale-110 ${
+                          className={`p-1.5 md:p-2 rounded-lg transition-all hover:scale-110 ${
                             isLiked
                               ? 'bg-red-100 text-red-600'
                               : 'bg-gray-100 text-gray-600 hover:bg-red-50 hover:text-red-600'
@@ -408,7 +410,7 @@ export function NewsSection() {
                         </button>
                         <button
                           onClick={(e) => toggleBookmark(news.id, e)}
-                          className={`p-2 rounded-lg transition-all hover:scale-110 ${
+                          className={`p-1.5 md:p-2 rounded-lg transition-all hover:scale-110 ${
                             isBookmarked
                               ? 'bg-yellow-100 text-yellow-600'
                               : 'bg-gray-100 text-gray-600 hover:bg-yellow-50 hover:text-yellow-600'
@@ -418,7 +420,7 @@ export function NewsSection() {
                         </button>
                         <button
                           onClick={(e) => shareNews(news, e)}
-                          className="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-all hover:scale-110"
+                          className="p-1.5 md:p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-all hover:scale-110"
                         >
                           <Share2 className="w-4 h-4" />
                         </button>
@@ -431,7 +433,7 @@ export function NewsSection() {
           </div>
 
           {/* Indicators */}
-          <div className="flex justify-center gap-2 mt-8">
+          <div className="flex justify-center gap-2 mt-6 md:mt-8">
             {mockNews.map((_, idx) => (
               <button
                 key={idx}
@@ -439,19 +441,19 @@ export function NewsSection() {
                   setCurrentIndex(idx);
                   setAutoPlay(false);
                 }}
-                className={`h-3 rounded-full transition-all duration-300 ${
+                className={`h-2 md:h-3 rounded-full transition-all duration-300 ${
                   idx === currentIndex
-                    ? 'w-12 bg-gradient-to-r from-blue-600 to-green-600'
-                    : 'w-3 bg-gray-300 hover:bg-gray-400 hover:w-6'
+                    ? 'w-8 md:w-12 bg-gradient-to-r from-blue-600 to-green-600'
+                    : 'w-2 md:w-3 bg-gray-300 hover:bg-gray-400 hover:w-6'
                 }`}
               />
             ))}
           </div>
 
           {/* View All Button */}
-          <div className="flex justify-center mt-6">
-            <button className="bg-gradient-to-r from-blue-600 to-green-600 text-white px-8 py-3 rounded-xl font-bold hover:shadow-lg transition-all hover:scale-105 flex items-center gap-2">
-              <Newspaper className="w-5 h-5" />
+          <div className="flex justify-center mt-4 md:mt-6">
+            <button className="bg-gradient-to-r from-blue-600 to-green-600 text-white px-6 py-2.5 md:px-8 md:py-3 rounded-xl text-sm md:text-base font-bold hover:shadow-lg transition-all hover:scale-105 flex items-center gap-2">
+              <Newspaper className="w-4 h-4 md:w-5 md:h-5" />
               View All News
             </button>
           </div>
@@ -468,7 +470,7 @@ export function NewsSection() {
           <div className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-3xl max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-300">
             <div className="bg-white rounded-3xl shadow-2xl overflow-hidden mx-4">
               {/* Hero Image */}
-              <div className="relative h-80 overflow-hidden">
+              <div className="relative h-56 md:h-80 overflow-hidden">
                 <img
                   src={selectedNews.image}
                   alt={selectedNews.title}
@@ -478,48 +480,48 @@ export function NewsSection() {
                 
                 <button
                   onClick={() => setSelectedNews(null)}
-                  className="absolute top-6 right-6 p-3 bg-white/20 backdrop-blur-sm hover:bg-white/30 rounded-xl transition-all"
+                  className="absolute top-4 right-4 md:top-6 md:right-6 p-2 md:p-3 bg-white/20 backdrop-blur-sm hover:bg-white/30 rounded-xl transition-all"
                 >
-                  <X className="w-6 h-6 text-white" />
+                  <X className="w-5 h-5 md:w-6 md:h-6 text-white" />
                 </button>
 
                 {/* Badges on Image */}
-                <div className="absolute top-6 left-6 flex items-center gap-3">
-                  <div className={`bg-gradient-to-r ${supermarketColors[selectedNews.supermarket].gradient} text-white px-4 py-2 rounded-xl font-bold shadow-lg`}>
+                <div className="absolute top-4 left-4 md:top-6 md:left-6 flex items-center gap-2 md:gap-3">
+                  <div className={`bg-gradient-to-r ${supermarketColors[selectedNews.supermarket].gradient} text-white px-3 py-1 md:px-4 md:py-2 rounded-xl text-xs md:text-sm font-bold shadow-lg`}>
                     {supermarketColors[selectedNews.supermarket].name}
                   </div>
-                  <div className={`${typeIcons[selectedNews.type].bgColor} backdrop-blur-sm px-4 py-2 rounded-xl flex items-center gap-2`}>
-                    {React.createElement(typeIcons[selectedNews.type].icon, { className: `w-5 h-5 ${typeIcons[selectedNews.type].color}` })}
-                    <span className={`font-bold ${typeIcons[selectedNews.type].color}`}>
+                  <div className={`${typeIcons[selectedNews.type].bgColor} backdrop-blur-sm px-3 py-1 md:px-4 md:py-2 rounded-xl flex items-center gap-2`}>
+                    {React.createElement(typeIcons[selectedNews.type].icon, { className: `w-4 h-4 md:w-5 md:h-5 ${typeIcons[selectedNews.type].color}` })}
+                    <span className={`text-xs md:text-sm font-bold ${typeIcons[selectedNews.type].color}`}>
                       {typeIcons[selectedNews.type].label}
                     </span>
                   </div>
                 </div>
 
                 {selectedNews.change && (
-                  <div className={`absolute top-6 right-24 ${selectedNews.change < 0 ? 'bg-green-600' : 'bg-red-600'} text-white px-6 py-3 rounded-2xl shadow-lg`}>
-                    <div className="text-3xl font-bold">
+                  <div className={`absolute top-16 right-4 md:top-6 md:right-24 ${selectedNews.change < 0 ? 'bg-green-600' : 'bg-red-600'} text-white px-4 py-2 md:px-6 md:py-3 rounded-2xl shadow-lg`}>
+                    <div className="text-xl md:text-3xl font-bold">
                       {selectedNews.change > 0 ? '+' : ''}{selectedNews.change}%
                     </div>
-                    <div className="text-xs text-center">Change</div>
+                    <div className="text-[10px] md:text-xs text-center">Change</div>
                   </div>
                 )}
 
-                <div className="absolute bottom-6 left-6 right-6">
-                  <h2 className="text-4xl font-bold text-white mb-3 drop-shadow-lg">
+                <div className="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-6">
+                  <h2 className="text-xl md:text-4xl font-bold text-white mb-2 md:mb-3 drop-shadow-lg leading-tight">
                     {selectedNews.title}
                   </h2>
-                  <div className="flex items-center gap-4 text-white/90 text-sm">
+                  <div className="flex flex-wrap items-center gap-3 md:gap-4 text-white/90 text-xs md:text-sm">
                     <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4" />
+                      <Clock className="w-3 h-3 md:w-4 md:h-4" />
                       {selectedNews.date}
                     </div>
                     <div className="flex items-center gap-2">
-                      <Eye className="w-4 h-4" />
+                      <Eye className="w-3 h-3 md:w-4 md:h-4" />
                       {selectedNews.views} views
                     </div>
                     <div className="flex items-center gap-2">
-                      <Heart className={`w-4 h-4 ${likedNews.has(selectedNews.id) ? 'fill-red-500 text-red-500' : ''}`} />
+                      <Heart className={`w-3 h-3 md:w-4 md:h-4 ${likedNews.has(selectedNews.id) ? 'fill-red-500 text-red-500' : ''}`} />
                       {selectedNews.likes + (likedNews.has(selectedNews.id) ? 1 : 0)} likes
                     </div>
                   </div>
@@ -527,24 +529,24 @@ export function NewsSection() {
               </div>
 
               {/* Content */}
-              <div className="p-8">
+              <div className="p-6 md:p-8">
                 {/* Full Description */}
-                <p className="text-gray-700 text-lg leading-relaxed mb-6">
+                <p className="text-gray-700 text-base md:text-lg leading-relaxed mb-6">
                   {selectedNews.fullContent}
                 </p>
 
                 {/* Products */}
                 {selectedNews.products && selectedNews.products.length > 0 && (
                   <div className="mb-6">
-                    <h3 className="font-bold text-gray-900 text-xl mb-4 flex items-center gap-2">
-                      <Sparkles className="w-6 h-6 text-purple-600" />
+                    <h3 className="font-bold text-gray-900 text-lg md:text-xl mb-4 flex items-center gap-2">
+                      <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-purple-600" />
                       Affected Products
                     </h3>
-                    <div className="flex flex-wrap gap-3">
+                    <div className="flex flex-wrap gap-2 md:gap-3">
                       {selectedNews.products.map((product, i) => (
                         <span
                           key={i}
-                          className={`${supermarketColors[selectedNews.supermarket].bg} border-2 ${supermarketColors[selectedNews.supermarket].border} px-5 py-3 rounded-xl text-sm font-bold ${supermarketColors[selectedNews.supermarket].text} hover:scale-105 transition-transform cursor-pointer`}
+                          className={`${supermarketColors[selectedNews.supermarket].bg} border-2 ${supermarketColors[selectedNews.supermarket].border} px-3 py-2 md:px-5 md:py-3 rounded-xl text-xs md:text-sm font-bold ${supermarketColors[selectedNews.supermarket].text} hover:scale-105 transition-transform cursor-pointer`}
                         >
                           {product}
                         </span>
@@ -554,16 +556,16 @@ export function NewsSection() {
                 )}
 
                 {/* Tip Box */}
-                <div className="bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-purple-200 rounded-2xl p-6 mb-6">
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-purple-200 rounded-2xl p-4 md:p-6 mb-6">
                   <div className="flex items-start gap-3">
-                    <div className="bg-purple-600 text-white p-3 rounded-xl">
-                      <ThumbsUp className="w-6 h-6" />
+                    <div className="bg-purple-600 text-white p-2 md:p-3 rounded-xl">
+                      <ThumbsUp className="w-5 h-5 md:w-6 md:h-6" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                      <h4 className="font-bold text-gray-900 mb-1 md:mb-2 flex items-center gap-2 text-sm md:text-base">
                         💡 PriceScope.lk Pro Tip
                       </h4>
-                      <p className="text-gray-700 text-sm leading-relaxed">
+                      <p className="text-gray-700 text-xs md:text-sm leading-relaxed">
                         Use PriceScope.lk's comparison tool to instantly see prices across Cargills, Keells, and Glomark. Our smart cart automatically selects the best prices to maximize your savings on every purchase!
                       </p>
                     </div>
@@ -571,19 +573,19 @@ export function NewsSection() {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 md:gap-3">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       toggleLike(selectedNews.id, e);
                     }}
-                    className={`flex-1 py-4 rounded-xl font-bold transition-all hover:scale-105 flex items-center justify-center gap-2 ${
+                    className={`flex-1 py-3 md:py-4 rounded-xl font-bold transition-all hover:scale-105 flex items-center justify-center gap-2 text-sm md:text-base ${
                       likedNews.has(selectedNews.id)
                         ? 'bg-red-600 text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-red-50'
                     }`}
                   >
-                    <Heart className={`w-5 h-5 ${likedNews.has(selectedNews.id) ? 'fill-current' : ''}`} />
+                    <Heart className={`w-4 h-4 md:w-5 md:h-5 ${likedNews.has(selectedNews.id) ? 'fill-current' : ''}`} />
                     {likedNews.has(selectedNews.id) ? 'Liked' : 'Like'}
                   </button>
                   <button
@@ -591,13 +593,13 @@ export function NewsSection() {
                       e.stopPropagation();
                       toggleBookmark(selectedNews.id, e);
                     }}
-                    className={`flex-1 py-4 rounded-xl font-bold transition-all hover:scale-105 flex items-center justify-center gap-2 ${
+                    className={`flex-1 py-3 md:py-4 rounded-xl font-bold transition-all hover:scale-105 flex items-center justify-center gap-2 text-sm md:text-base ${
                       bookmarkedNews.has(selectedNews.id)
                         ? 'bg-yellow-600 text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-yellow-50'
                     }`}
                   >
-                    <Bookmark className={`w-5 h-5 ${bookmarkedNews.has(selectedNews.id) ? 'fill-current' : ''}`} />
+                    <Bookmark className={`w-4 h-4 md:w-5 md:h-5 ${bookmarkedNews.has(selectedNews.id) ? 'fill-current' : ''}`} />
                     {bookmarkedNews.has(selectedNews.id) ? 'Saved' : 'Save'}
                   </button>
                   <button
@@ -605,9 +607,9 @@ export function NewsSection() {
                       e.stopPropagation();
                       shareNews(selectedNews, e);
                     }}
-                    className="flex-1 py-4 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all hover:scale-105 flex items-center justify-center gap-2"
+                    className="flex-1 py-3 md:py-4 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all hover:scale-105 flex items-center justify-center gap-2 text-sm md:text-base"
                   >
-                    <Share2 className="w-5 h-5" />
+                    <Share2 className="w-4 h-4 md:w-5 md:h-5" />
                     Share
                   </button>
                 </div>

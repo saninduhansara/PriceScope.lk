@@ -4,24 +4,24 @@ import { useState, useMemo, useEffect } from 'react';
 import { Search, SlidersHorizontal, ShoppingCart, TrendingDown, User, Store, LogIn, ChefHat } from 'lucide-react';
 
 // Fixed Imports (Relative paths for components folder)
-import { ProductCard } from './ProductCard';
-import { ComparisonModal } from './ComparisonModal';
-import { CartSidebar } from './CartSidebar';
-import { BranchLocator } from './BranchLocator';
-import { LoginModal } from './LoginModal';
-import { ProfileModal } from './ProfileModal';
-import { NewsSection } from './NewsSection';
-import { AIAssistant } from './AIAssistant';
-import { FilterPanel } from './FilterPanel';
-import { LoginRequiredModal } from './LoginRequiredModal';
-import { WelcomeBanner } from './WelcomeBanner';
-import { NotificationPanel } from './NotificationPanel';
-import { RecipesPage } from './RecipesPage';
-import { ShoppingModeModal } from './ShoppingModeModal';
+import { ProductCard } from '@/components/ProductCard';
+import { ComparisonModal } from '@/components/ComparisonModal';
+import { CartSidebar } from '@/components/CartSidebar';
+import { BranchLocator } from '@/components/BranchLocator';
+import { LoginModal } from '@/components/LoginModal';
+import { ProfileModal } from '@/components/ProfileModal';
+import { NewsSection } from '@/components/NewsSection';
+import { AIAssistant } from '@/components/AIAssistant';
+import { FilterPanel } from '@/components/FilterPanel';
+import { LoginRequiredModal } from '@/components/LoginRequiredModal';
+import { WelcomeBanner } from '@/components/WelcomeBanner';
+import { NotificationPanel } from '@/components/NotificationPanel';
+import { RecipesPage } from '@/components/RecipesPage';
+import { ShoppingModeModal } from '@/components/ShoppingModeModal';
 
 // Fixed Data/Types Imports (Up one level)
-import { Product, CartItem, Supermarket } from '../types';
-import { mockProducts } from '../data/mockProducts';
+import { Product, CartItem, Supermarket } from '@/types';
+import { mockProducts } from '@/data/mockProducts';
 
 export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -213,15 +213,15 @@ export default function App() {
                 <TrendingDown className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+                <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
                   PriceScope.lk
                 </h1>
-                <p className="text-xs text-gray-600">Compare. Save. Shop Smart.</p>
+                <p className="text-[10px] md:text-xs text-gray-600">Compare. Save. Shop Smart.</p>
               </div>
             </div>
 
-            {/* Search Bar (Added hydration fix) */}
-            <div className="flex-1 max-w-2xl">
+            {/* Search Bar */}
+            <div className="hidden md:block flex-1 max-w-2xl px-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
@@ -235,8 +235,8 @@ export default function App() {
               </div>
             </div>
 
-            {/* Action Buttons (Added hydration fix) */}
-            <div className="flex items-center gap-3">
+            {/* Action Buttons */}
+            <div className="flex items-center gap-2 md:gap-3">
               <NotificationPanel 
                 savedProducts={savedProducts}
                 allProducts={mockProducts}
@@ -245,7 +245,7 @@ export default function App() {
               
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="p-3 hover:bg-gray-100 rounded-xl transition-colors"
+                className="p-2 md:p-3 hover:bg-gray-100 rounded-xl transition-colors"
                 suppressHydrationWarning={true}
               >
                 <SlidersHorizontal className="w-5 h-5 text-gray-600" />
@@ -253,7 +253,7 @@ export default function App() {
               
               <button
                 onClick={() => setIsCartOpen(true)}
-                className="relative p-3 hover:bg-gray-100 rounded-xl transition-colors"
+                className="relative p-2 md:p-3 hover:bg-gray-100 rounded-xl transition-colors"
                 suppressHydrationWarning={true}
               >
                 <ShoppingCart className="w-5 h-5 text-gray-600" />
@@ -267,7 +267,7 @@ export default function App() {
               {user ? (
                 <button
                   onClick={() => setIsProfileOpen(true)}
-                  className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-green-600 text-white px-4 py-2 rounded-xl hover:shadow-lg transition-all"
+                  className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-green-600 text-white px-3 py-2 md:px-4 rounded-xl hover:shadow-lg transition-all"
                   suppressHydrationWarning={true}
                 >
                   <User className="w-4 h-4" />
@@ -276,7 +276,7 @@ export default function App() {
               ) : (
                 <button
                   onClick={() => setIsLoginOpen(true)}
-                  className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-green-600 text-white px-4 py-2 rounded-xl hover:shadow-lg transition-all"
+                  className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-green-600 text-white px-3 py-2 md:px-4 rounded-xl hover:shadow-lg transition-all"
                   suppressHydrationWarning={true}
                 >
                   <LogIn className="w-4 h-4" />
@@ -286,13 +286,28 @@ export default function App() {
             </div>
           </div>
 
-          {/* Category Pills (Added hydration fix) */}
-          <div className="flex items-center gap-2 mt-4 overflow-x-auto pb-2">
+          {/* Mobile Search Bar */}
+          <div className="md:hidden mt-4">
+             <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 shadow-sm"
+                  suppressHydrationWarning={true} 
+                />
+              </div>
+          </div>
+
+          {/* Category Pills */}
+          <div className="flex items-center gap-2 mt-4 overflow-x-auto pb-2 scrollbar-hide">
             {categories.map(category => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-full whitespace-nowrap font-medium transition-all ${
+                className={`px-4 py-2 rounded-full whitespace-nowrap font-medium text-sm transition-all ${
                   selectedCategory === category
                     ? 'bg-gradient-to-r from-blue-600 to-green-600 text-white shadow-md'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -305,21 +320,21 @@ export default function App() {
           </div>
 
           {/* Stats Bar */}
-          <div className="mt-4 flex items-center justify-between bg-gradient-to-r from-blue-50 to-green-50 rounded-xl p-4">
+          <div className="mt-4 flex items-center justify-between bg-gradient-to-r from-blue-50 to-green-50 rounded-xl p-3 md:p-4 border border-blue-100">
             <div className="flex items-center gap-2">
-              <div className="bg-blue-600 text-white p-2 rounded-lg">
-                <ShoppingCart className="w-4 h-4" />
+              <div className="bg-blue-600 text-white p-1.5 md:p-2 rounded-lg">
+                <ShoppingCart className="w-3 h-3 md:w-4 md:h-4" />
               </div>
-              <span className="text-sm text-gray-700">
-                <span className="font-bold text-blue-600">{stats.totalProducts}</span> Products Available
+              <span className="text-xs md:text-sm text-gray-700">
+                <span className="font-bold text-blue-600">{stats.totalProducts}</span> Items
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="bg-green-600 text-white p-2 rounded-lg">
-                <TrendingDown className="w-4 h-4" />
+              <div className="bg-green-600 text-white p-1.5 md:p-2 rounded-lg">
+                <TrendingDown className="w-3 h-3 md:w-4 md:h-4" />
               </div>
-              <span className="text-sm text-gray-700">
-                Potential Savings: <span className="font-bold text-green-600">Rs. {stats.totalSavings.toFixed(2)}</span>
+              <span className="text-xs md:text-sm text-gray-700">
+                Save: <span className="font-bold text-green-600">Rs. {stats.totalSavings.toFixed(0)}</span>
               </span>
             </div>
           </div>
@@ -343,54 +358,60 @@ export default function App() {
         />
       )}
 
-      {/* Supermarket Legend */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">Comparing Prices From:</h2>
-            <div className="flex items-center gap-3">
+      {/* Action Buttons & Legend Section (Optimized for Mobile) */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
+        <div className="bg-white rounded-xl shadow-sm p-4 md:p-6">
+          
+          {/* Header & Buttons - Stacks on Mobile */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            <h2 className="text-lg font-semibold text-gray-800">Compare Prices:</h2>
+            
+            {/* Action Buttons Grid */}
+            <div className="grid grid-cols-2 gap-3 w-full md:w-auto">
               <button
                 onClick={() => setShowRecipesPage(true)}
-                className="bg-gradient-to-r from-orange-600 to-red-600 text-white px-6 py-3 rounded-xl font-bold hover:shadow-lg transition-all hover:scale-105 flex items-center gap-2"
+                className="bg-gradient-to-r from-orange-600 to-red-600 text-white px-3 py-3 md:px-6 rounded-xl font-bold hover:shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 text-sm md:text-base"
                 suppressHydrationWarning={true}
               >
-                <ChefHat className="w-5 h-5" />
-                Sri Lankan Recipes
+                <ChefHat className="w-4 h-4 md:w-5 md:h-5" />
+                <span className="whitespace-nowrap">Recipes</span>
               </button>
               <button
                 onClick={() => setIsBranchLocatorOpen(true)}
-                className="bg-gradient-to-r from-blue-600 to-green-600 text-white px-6 py-3 rounded-xl font-bold hover:shadow-lg transition-all hover:scale-105 flex items-center gap-2"
+                className="bg-gradient-to-r from-blue-600 to-green-600 text-white px-3 py-3 md:px-6 rounded-xl font-bold hover:shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 text-sm md:text-base"
                 suppressHydrationWarning={true}
               >
-                <Store className="w-5 h-5" />
-                Find Branches
+                <Store className="w-4 h-4 md:w-5 md:h-5" />
+                <span className="whitespace-nowrap">Branches</span>
               </button>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex items-center gap-3 p-4 bg-red-50 rounded-lg border-2 border-red-200">
-              <div className="w-12 h-12 bg-red-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">C</div>
-              <div><h3 className="font-bold text-red-900">Cargills Food City</h3><p className="text-sm text-red-700">Island-wide supermarket chain</p></div>
+
+          {/* Supermarket Legend - Scrollable or Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+            <div className="flex items-center gap-3 p-3 bg-red-50 rounded-lg border border-red-100 md:border-2 md:border-red-200">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-red-600 rounded-lg flex items-center justify-center text-white font-bold text-lg md:text-xl shadow-sm">C</div>
+              <div><h3 className="font-bold text-red-900 text-sm md:text-base">Cargills</h3><p className="text-xs text-red-700">Island-wide chain</p></div>
             </div>
-            <div className="flex items-center gap-3 p-4 bg-green-50 rounded-lg border-2 border-green-200">
-              <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">K</div>
-              <div><h3 className="font-bold text-green-900">Keells Super</h3><p className="text-sm text-green-700">Premium supermarket chain</p></div>
+            <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg border border-green-100 md:border-2 md:border-green-200">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-green-600 rounded-lg flex items-center justify-center text-white font-bold text-lg md:text-xl shadow-sm">K</div>
+              <div><h3 className="font-bold text-green-900 text-sm md:text-base">Keells</h3><p className="text-xs text-green-700">Premium chain</p></div>
             </div>
-            <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg border-2 border-blue-200">
-              <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">G</div>
-              <div><h3 className="font-bold text-blue-900">Glomark</h3><p className="text-sm text-blue-700">Value supermarket chain</p></div>
+            <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg border border-blue-100 md:border-2 md:border-blue-200">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-lg md:text-xl shadow-sm">G</div>
+              <div><h3 className="font-bold text-blue-900 text-sm md:text-base">Glomark</h3><p className="text-xs text-blue-700">Value chain</p></div>
             </div>
           </div>
         </div>
       </div>
 
       {/* News Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
         <NewsSection />
       </div>
 
-      {/* Products Grid */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-16">
+      {/* Products Grid - Optimized: 2 Cols on Mobile */}
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 pb-20">
         {filteredProducts.length === 0 ? (
           <div className="text-center py-16">
             <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -398,7 +419,8 @@ export default function App() {
             <p className="text-gray-500 mt-2">Try adjusting your search or filters</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          /* Grid Change: grid-cols-2 on mobile with smaller gap */
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
             {filteredProducts.map(product => (
               <ProductCard
                 key={product.id}
